@@ -1,2 +1,4 @@
-# samples-keyboardheight
-Sample how to calculate the Android keyboard height
+# Release notes
+
+## Release notes version 1.0.0
+

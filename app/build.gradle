@@ -1,0 +1,30 @@
+apply plugin: 'com.android.application'
+
+android {
+
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 23
+        versionName = "1.0.0"
+        versionCode = 1000
+        applicationId = "com.siebeprojects.samples.keyboardheight"
+    }
+
+    lintOptions {
+      abortOnError false
+    }
+
+    signingConfigs {
+        release
+    }
+
+    buildTypes {
+    }
+}
+
+dependencies {
+    compile 'com.android.support:appcompat-v7:23.3.0'
+}
