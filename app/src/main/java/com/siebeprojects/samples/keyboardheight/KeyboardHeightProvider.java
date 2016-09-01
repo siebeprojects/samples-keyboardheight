@@ -78,6 +78,9 @@ public class KeyboardHeightProvider extends PopupWindow {
     public KeyboardHeightProvider(Activity activity, View parentView, int keyboardPortraitheight, int keyboardLandscapeHeight) {
 		super(activity);
 
+        if (activity == null || parentView == null) {
+            throw new IllegalArgumentException("Activity or parentView cannot be null");
+        }
         if (storedLandscapeHeight < 0) {
             throw new IllegalArgumentException("storedLandscapeHeight must be >= 0");
         }
@@ -91,7 +94,8 @@ public class KeyboardHeightProvider extends PopupWindow {
         this.keyboardPortraitheight  = keyboardPortraitheight;
         this.keyboardLandscapeHeight = keyboardLandscapeHeight;
 
-		popupView = initializePopupView();
+		LayoutInflater li = (LayoutInflater) activity.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+		popupView = li.inflate(R.layout.keyboardheight_popupwindow, null, false);
         setContentView(popupView);
 
 		setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE | LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
@@ -100,18 +104,27 @@ public class KeyboardHeightProvider extends PopupWindow {
         setWidth(0);
 		setHeight(LayoutParams.MATCH_PARENT);
 
-        // init size changes
-        initSizeChanges();
-	}
+		popupView.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+
+                @Override
+                public void onGlobalLayout() {
+                    if (popupView != null) {
+                        handleGlobalLayout();
+                    }
+                }
+            });
+    }
 
     /**
-     * Initialize the keyboard height provider
+     * Start the KeyboardHeightProvider, this must be called after the onResume of the Activity.
+     * PopupWindows are not allowed to be registered before the onResume has finished
+     * of the Activity.
      */
-    public void init() {
+    public void start() {
 
         if (!isShowing() && parentView.getWindowToken() != null) {
             setBackgroundDrawable(new ColorDrawable(0));
-            showAtLocation(rootView, Gravity.NO_GRAVITY, 0, 0);
+            showAtLocation(parentView, Gravity.NO_GRAVITY, 0, 0);
         }
     }
 
@@ -145,36 +158,12 @@ public class KeyboardHeightProvider extends PopupWindow {
     }
 
     /**
-     * Get the keyboard height when the phone is in landscape mode. 
+     * Get the keyboard height when the phone is in  mode. 
      *
      * @return 
      */
     public int getLandscapeHeight() {
-        return landscapeHeight;
-    }
-
-    /**
-     * Get the last portrait height for a keyboard
-     *
-     */
-    public int getLastPortraitHeight() {
-        int h = portraitHeight;
-        if (h == 0) {
-            h = getPreference(PREF_PORTRAIT, 0);
-        }
-        return h;
-    }
-
-    /**
-     * Get the last landscape height for a keyboard
-     *
-     */
-    public int getLastLandscapeHeight() {
-        int h = landscapeHeight;
-        if (h == 0) {
-            h = getPreference(PREF_LANDSCAPE, 0);
-        }
-        return h;
+        return keyboardLandscapeHeight;
     }
 
     /**
@@ -198,37 +187,6 @@ public class KeyboardHeightProvider extends PopupWindow {
         return orientation;
     }
 
-    /** 
-     * Initialize the popup window, this popup window will be used
-     * to determine the height of the keyboard.
-     * 
-     * @return The view of the popup window 
-     */
-	private View initializePopupWindow() {
-		LayoutInflater li = (LayoutInflater) activity.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-		return li.inflate(R.layout.keyboardheight_popupwindow, null, false);
-	}
-
-	/**
-	 * Call this function to resize the emoji popup 
-     * according to your soft keyboard size
-	 */
-	public void initSizeChanges() {
-
-		popupView.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
-
-                /**
-                 * {@inheritDoc}
-                 */
-                @Override
-                public void onGlobalLayout() {
-                    if (popupView != null) {
-                        handleGlobalLayout();
-                    }
-                }
-            });
-	}
-
     /**
      * Get status bar height
      *
@@ -242,7 +200,6 @@ public class KeyboardHeightProvider extends PopupWindow {
         }
         return height;
     }
-
 
     /**
      * Get the navigation bar height
@@ -262,6 +219,7 @@ public class KeyboardHeightProvider extends PopupWindow {
      *
      */
     private void handleGlobalLayout() {
+
         Rect r = new Rect();
         popupView.getWindowVisibleDisplayFrame(r);
 
