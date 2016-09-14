@@ -90,7 +90,7 @@ public final class MainActivity extends AppCompatActivity implements KeyboardHei
      */
     @Override
     public void onKeyboardHeightChanged(int height) {
-        Log.i(TAG, "onKeyboardHeightChanged: " + height);
+        Log.i(TAG, "onKeyboardHeightChanged in pixels: " + height);
         TextView tv = (TextView)findViewById(R.id.height_text);
         tv.setText(Integer.toString(height));
     }
