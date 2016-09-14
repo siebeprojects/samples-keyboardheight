@@ -162,7 +162,7 @@ public class KeyboardHeightProvider extends PopupWindow {
      *
      * @return the landscape mode
      */
-    public int getLandscapeHeight() {
+    public int getKeyboardLandscapeHeight() {
         return keyboardLandscapeHeight;
     }
 
