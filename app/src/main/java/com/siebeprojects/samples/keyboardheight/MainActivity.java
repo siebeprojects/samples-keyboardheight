@@ -17,8 +17,11 @@
 
 package com.siebeprojects.samples.keyboardheight;
 
+import android.widget.TextView;
+import android.view.View;
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -40,10 +43,20 @@ public final class MainActivity extends AppCompatActivity implements KeyboardHei
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.keyboardheight_activity);
+        setContentView(R.layout.activity);
+
+        View parentView = findViewById(R.id.parentview);
+        keyboardHeightProvider = new KeyboardHeightProvider(this, parentView, 0, 0);
         
-        keyboardHeightProvider = new KeyboardHeightProvider(this, findViewById(R.id.parentview), 0, 0);
+        // start the keyboard height provider after 
+        // the view is initialized and after onResume of this Activity
+        parentView.post(new Runnable() {
+                public void run() {
+                    keyboardHeightProvider.start();
+                }
+            });
     }
+
 
     /**
      * {@inheritDoc}
@@ -51,6 +64,7 @@ public final class MainActivity extends AppCompatActivity implements KeyboardHei
     @Override
     public void onPause() {
         super.onPause();
+        keyboardHeightProvider.setKeyboardHeightObserver(null);
     }
 
     /**
@@ -59,15 +73,16 @@ public final class MainActivity extends AppCompatActivity implements KeyboardHei
     @Override
     public void onResume() {
         super.onResume();
+        keyboardHeightProvider.setKeyboardHeightObserver(this);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void onPostResume() {
-        super.onPostResume();
-        keyboardHeightProvider.start();
+    public void onDestroy() {
+        super.onDestroy();
+        keyboardHeightProvider.close();
     }
 
     /**
@@ -76,5 +91,7 @@ public final class MainActivity extends AppCompatActivity implements KeyboardHei
     @Override
     public void onKeyboardHeightChanged(int height) {
         Log.i(TAG, "onKeyboardHeightChanged: " + height);
+        TextView tv = (TextView)findViewById(R.id.height_text);
+        tv.setText(Integer.toString(height));
     }
 }

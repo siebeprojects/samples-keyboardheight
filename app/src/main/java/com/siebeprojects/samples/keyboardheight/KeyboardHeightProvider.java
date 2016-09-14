@@ -17,17 +17,15 @@
 
 package com.siebeprojects.samples.keyboardheight;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.res.Configuration;
-import android.content.res.Resources;
-
-import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
-
 import android.app.Activity;
 
 import android.util.Log;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+
+import android.graphics.Point;
+import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 
 import android.view.Display;
 import android.view.Gravity;
@@ -45,8 +43,13 @@ import android.widget.PopupWindow;
  */
 public class KeyboardHeightProvider extends PopupWindow {
 
-    /**  The keyboard height observer */
+    private final static String TAG     = "sample_KeyboardHeightProvider";
+
+    /** The keyboard height observer */
     private KeyboardHeightObserver observer;
+
+    /** The minimum height of the navigation bar */
+    private final static int NAVIGATION_BAR_MIN_HEIGHT  = 100;
 
     /** The cached landscape height of the keyboard */
     private int keyboardLandscapeHeight;
@@ -92,7 +95,7 @@ public class KeyboardHeightProvider extends PopupWindow {
         this.keyboardLandscapeHeight = keyboardLandscapeHeight;
 
 		LayoutInflater li = (LayoutInflater) activity.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-		popupView = li.inflate(R.layout.keyboardheight_popupwindow, null, false);
+		this.popupView = li.inflate(R.layout.popupwindow, null, false);
         setContentView(popupView);
 
 		setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE | LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
@@ -170,17 +173,14 @@ public class KeyboardHeightProvider extends PopupWindow {
      */
     public int getScreenOrientation() {
 
-        Display getOrient = activity.getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        activity.getWindowManager().getDefaultDisplay().getSize(size);
         int orientation = Configuration.ORIENTATION_UNDEFINED;
 
-        if (getOrient.getWidth() == getOrient.getHeight()) {
-            orientation = Configuration.ORIENTATION_SQUARE;
+        if (size.x > size.y) {
+            orientation = Configuration.ORIENTATION_LANDSCAPE;
         } else { 
-            if (getOrient.getWidth() < getOrient.getHeight()) {
-                orientation = Configuration.ORIENTATION_PORTRAIT;
-            } else { 
-                orientation = Configuration.ORIENTATION_LANDSCAPE;
-            }
+            orientation = Configuration.ORIENTATION_PORTRAIT;
         }
         return orientation;
     }
@@ -246,8 +246,7 @@ public class KeyboardHeightProvider extends PopupWindow {
             this.navigationBarVisible = true;
             handleKeyboardClosed();
         }
-        else if ((keyboardHeight = calculateKeyboardHeight(rect, statusBarHeight, navigationBarHeight, screenHeight)) < 100) {
-            // navigation bar must be larger than 100 pixels.
+        else if ((keyboardHeight = calculateKeyboardHeight(rect, statusBarHeight, navigationBarHeight, screenHeight)) < NAVIGATION_BAR_MIN_HEIGHT) {
             this.navigationBarVisible = false;
             handleKeyboardClosed();
         } 
