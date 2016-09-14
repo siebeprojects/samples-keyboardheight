@@ -241,23 +241,23 @@ public class KeyboardHeightProvider extends PopupWindow {
         // keyboard is not shown
         if (rect.bottom == screenHeight) {
             this.navigationBarVisible = false;
-            handleKeyboardClosed();
+            notifyKeyboardHeightChanged(0);
         }
         else if (rect.bottom + navigationBarHeight == screenHeight) {
             this.navigationBarVisible = true;
-            handleKeyboardClosed();
+            notifyKeyboardHeightChanged(0);
         }
         else if ((keyboardHeight = calculateKeyboardHeight(rect, statusBarHeight, navigationBarHeight, screenHeight)) < NAVIGATION_BAR_MIN_HEIGHT) {
             this.navigationBarVisible = false;
-            handleKeyboardClosed();
+            notifyKeyboardHeightChanged(0);
         } 
         else if (portrait) {
             this.keyboardPortraitHeight = keyboardHeight; 
-            handleKeyboardOpened(keyboardPortraitHeight);
+            notifyKeyboardHeightChanged(keyboardPortraitHeight);
         } 
         else {
             this.keyboardLandscapeHeight = keyboardHeight; 
-            handleKeyboardOpened(keyboardLandscapeHeight);
+            notifyKeyboardHeightChanged(keyboardLandscapeHeight);
         }
     }
 
@@ -279,18 +279,9 @@ public class KeyboardHeightProvider extends PopupWindow {
     /**
      *
      */
-    private void handleKeyboardClosed() {
-        if (observer != null) {
-            observer.onKeyboardHeightChanged(0);
-        }
-    }
-
-    /**
-     *
-     */
-    private void handleKeyboardOpened(int height) {
+    private void notifyKeyboardHeightChanged(int height) {
         if (observer != null) {
             observer.onKeyboardHeightChanged(height);
         }
-    } 
+    }
 }
