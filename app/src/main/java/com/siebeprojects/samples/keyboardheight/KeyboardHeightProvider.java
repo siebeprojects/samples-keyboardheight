@@ -94,11 +94,11 @@ public class KeyboardHeightProvider extends PopupWindow {
         this.keyboardPortraitHeight = keyboardPortraitHeight;
         this.keyboardLandscapeHeight = keyboardLandscapeHeight;
 
-		LayoutInflater li = (LayoutInflater) activity.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-		this.popupView = li.inflate(R.layout.popupwindow, null, false);
+		LayoutInflater inflator = (LayoutInflater) activity.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+		this.popupView = inflator.inflate(R.layout.popupwindow, null, false);
         setContentView(popupView);
 
-		setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE | LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+		setSoftInputMode(LayoutParams.SOFT_INPUT_ADJUST_RESIZE | LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
 
         setWidth(0);
