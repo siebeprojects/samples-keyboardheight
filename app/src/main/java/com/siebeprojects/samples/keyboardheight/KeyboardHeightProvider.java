@@ -39,11 +39,11 @@ import android.widget.PopupWindow;
 
 /**
  * The keyboard height provider, this class uses a PopupWindow
- * to calculate the window height when the keyboard is open
+ * to calculate the window height when the floating keyboard is opened and closed. 
  */
 public class KeyboardHeightProvider extends PopupWindow {
 
-    private final static String TAG     = "sample_KeyboardHeightProvider";
+    private final static String TAG = "sample_KeyboardHeightProvider";
 
     /** The keyboard height observer */
     private KeyboardHeightObserver observer;

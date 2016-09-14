@@ -27,7 +27,7 @@ import android.util.Log;
 
 /**
  * MainActivity that initialises the keyboardheight 
- * provider and observer.
+ * provider and observer. 
  */
 public final class MainActivity extends AppCompatActivity implements KeyboardHeightObserver {
 
