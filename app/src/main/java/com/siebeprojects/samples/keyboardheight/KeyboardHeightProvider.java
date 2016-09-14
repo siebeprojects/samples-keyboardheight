@@ -89,7 +89,8 @@ public class KeyboardHeightProvider extends PopupWindow {
         if (keyboardLandscapeHeight < 0) {
             throw new IllegalArgumentException("storedLandscapeHeight must be >= 0");
         }
-		this.parentView = parentView;
+
+        this.parentView = parentView;
         this.activity = activity;
         this.keyboardPortraitHeight = keyboardPortraitHeight;
         this.keyboardLandscapeHeight = keyboardLandscapeHeight;
