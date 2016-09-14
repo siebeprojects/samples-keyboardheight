@@ -40,9 +40,8 @@ import android.view.WindowManager.LayoutParams;
 import android.widget.PopupWindow;
 
 /**
- *
- *
- *
+ * The keyboard height provider, this class uses a PopupWindow
+ * to calculate the window height when the keyboard is open
  */
 public class KeyboardHeightProvider extends PopupWindow {
 
@@ -70,28 +69,26 @@ public class KeyboardHeightProvider extends PopupWindow {
     /** 
      * Construct a new KeyboardHeightProvider
      * 
-     * @param activity 
-     * @param parentView
-     * @param storedPortraitHeight 
-     * @param storedLandscapeHeight 
+     * @param activity                      The parent activity
+     * @param parentView                    The parent view used to calculate the height
+     * @param keyboardPortraitHeight        An optional cached value of the keyboard height in portrait mode
+     * @param storedLandscapeHeight         an optional cached value of the keyboard height in landscape mode
      */
     public KeyboardHeightProvider(Activity activity, View parentView, int keyboardPortraitheight, int keyboardLandscapeHeight) {
 		super(activity);
 
-        if (activity == null || parentView == null) {
-            throw new IllegalArgumentException("Activity or parentView cannot be null");
+        if (parentView == null) {
+            throw new IllegalArgumentException("parentView cannot be null");
         }
-        if (storedLandscapeHeight < 0) {
-            throw new IllegalArgumentException("storedLandscapeHeight must be >= 0");
-        }
-        if (storedPortraitHeight < 0) {
+        if (keyboardPortraitHeight < 0) {
             throw new IllegalArgumentException("storedPortraitHeight must be >= 0");
         }
-
+        if (keyboardLandscapeHeight < 0) {
+            throw new IllegalArgumentException("storedLandscapeHeight must be >= 0");
+        }
 		this.parentView = parentView;
         this.activity = activity;
-
-        this.keyboardPortraitheight  = keyboardPortraitheight;
+        this.keyboardPortraitHeight = keyboardPortraitHeight;
         this.keyboardLandscapeHeight = keyboardLandscapeHeight;
 
 		LayoutInflater li = (LayoutInflater) activity.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
@@ -109,7 +106,7 @@ public class KeyboardHeightProvider extends PopupWindow {
                 @Override
                 public void onGlobalLayout() {
                     if (popupView != null) {
-                        handleGlobalLayout();
+                        handleOnGlobalLayout();
                     }
                 }
             });
@@ -129,8 +126,8 @@ public class KeyboardHeightProvider extends PopupWindow {
     }
 
     /**
-     * Close the keyboard height provider, this provider will not be used anymore.
-     * Clear the observer from this provider.
+     * Close the keyboard height provider, 
+     * this provider will not be used anymore.
      */
     public void close() {
         this.observer = null;
@@ -138,7 +135,7 @@ public class KeyboardHeightProvider extends PopupWindow {
     }
 
     /** 
-     * Set teh keyboard height observer to this provider. The 
+     * Set the keyboard height observer to this provider. The 
      * observer will be notified when the keyboard height has changed. 
      * For example when the keyboard is opened or closed.
      * 
@@ -151,24 +148,25 @@ public class KeyboardHeightProvider extends PopupWindow {
     /**
      * Get the keyboard height when the phone is in portrait mode. 
      *
-     * @return 
+     * @return The portrait keyboard height
      */
     public int getKeyboardPortraitHeight() {
         return keyboardPortraitHeight;
     }
 
     /**
-     * Get the keyboard height when the phone is in  mode. 
+     * Get the keyboard height when the phone is in landscape mode. 
      *
-     * @return 
+     * @return the landscape mode
      */
     public int getLandscapeHeight() {
         return keyboardLandscapeHeight;
     }
 
     /**
+     * Get the screen orientation
      *
-     *
+     * @return the screen orientation
      */
     public int getScreenOrientation() {
 
@@ -187,9 +185,9 @@ public class KeyboardHeightProvider extends PopupWindow {
         return orientation;
     }
 
-    /**
-     * Get status bar height
-     *
+
+    /** 
+     * 
      */
     private int getStatusBarHeight(Resources res) {
 
@@ -201,9 +199,8 @@ public class KeyboardHeightProvider extends PopupWindow {
         return height;
     }
 
-    /**
-     * Get the navigation bar height
-     *
+    /** 
+     * 
      */
     private int getNavigationBarHeight(Resources res) {
 
@@ -218,90 +215,82 @@ public class KeyboardHeightProvider extends PopupWindow {
     /**
      *
      */
-    private void handleGlobalLayout() {
+    private void handleOnGlobalLayout() {
 
-        Rect r = new Rect();
-        popupView.getWindowVisibleDisplayFrame(r);
+        Rect rect = new Rect();
+        popupView.getWindowVisibleDisplayFrame(rect);
 
-        int screenWidth  = rootView.getRootView().getWidth();
-        int screenHeight = rootView.getRootView().getHeight();
+        int screenWidth  = parentView.getRootView().getWidth();
+        int screenHeight = parentView.getRootView().getHeight();
 
-        handleLayout(r, screenHeight, screenWidth < screenHeight);
+        handleLayoutChanged(rect, screenHeight, screenWidth < screenHeight);
     }
 
     /**
      *
      */
-    private void handleLayout(Rect r, int screenHeight, boolean portrait) {
+    private void handleLayoutChanged(Rect rect, int screenHeight, boolean portrait) {
 
         Resources res = activity.getResources();
         
-        int sbh = getStatusBarHeight(res);
-        int nbh = getNavigationBarHeight(res);
-        int kbh = 0;
+        int statusBarHeight = getStatusBarHeight(res);
+        int navigationBarHeight = getNavigationBarHeight(res);
+        int keyboardHeight = 0;
 
         // keyboard is not shown
-        if (r.bottom == screenHeight) {
-            this.navVisible = false;
-            handleFullScreen();
+        if (rect.bottom == screenHeight) {
+            this.navigationBarVisible = false;
+            handleKeyboardClosed();
         }
-        else if (r.bottom + nbh == screenHeight) {
-            this.navVisible = true;
-            handleFullScreen();
+        else if (rect.bottom + navigationBarHeight == screenHeight) {
+            this.navigationBarVisible = true;
+            handleKeyboardClosed();
         }
-        else if ((kbh = getKeyboardHeight(r, sbh, nbh, screenHeight)) < 100) {
-            this.navVisible = false;
-            handleFullScreen();
+        else if ((keyboardHeight = calculateKeyboardHeight(rect, statusBarHeight, navigationBarHeight, screenHeight)) < 100) {
+            // navigation bar must be larger than 100 pixels.
+            this.navigationBarVisible = false;
+            handleKeyboardClosed();
         } 
         else if (portrait) {
-            this.portraitHeight = kbh; 
-            handleKeyboardCalculated(PREF_PORTRAIT, portraitHeight);
+            this.keyboardPortraitHeight = keyboardHeight; 
+            handleKeyboardOpened(keyboardPortraitHeight);
         } 
         else {
-            this.landscapeHeight = kbh; 
-            handleKeyboardCalculated(PREF_LANDSCAPE, landscapeHeight);
+            this.keyboardLandscapeHeight = keyboardHeight; 
+            handleKeyboardOpened(keyboardLandscapeHeight);
         }
     }
 
     /**
      *
-     *
      */
-    private int getKeyboardHeight(Rect r, int sbh, int nbh, int screenHeight) {
+    private int calculateKeyboardHeight(Rect r, int statusBarHeight, int navigationBarHeight, int screenHeight) {
 
         int heightDifference = screenHeight - (r.bottom - r.top);
-        if (sbh > 0) {
-            heightDifference -= sbh;
+        if (statusBarHeight > 0) {
+            heightDifference -= statusBarHeight;
         }
-
-        // check if we should subtract the navigation bar height
-        // this may or may not be always visible. It may be attached
-        // with the keyboard only.
-        if (nbh > 0 && navVisible) {
-            heightDifference -= nbh;
+        if (navigationBarHeight > 0 && navigationBarVisible) {
+            heightDifference -= navigationBarHeight;
         }
         return heightDifference;
     }        
 
     /**
      *
-     *
      */
-    private void handleFullScreen() {
-        if (listener != null) {
-            listener.onKeyboardFullScreen();
+    private void handleKeyboardClosed() {
+        if (observer != null) {
+            observer.onKeyboardHeightChanged(0);
         }
     }
 
     /**
      *
-     *
      */
-    private void handleKeyboardCalculated(String key, int height) {
-
-        // do nothing if not changed
-        if (listener != null) {
-            listener.onKeyboardCalculated(height);
+    private void handleKeyboardOpened(int height) {
+        if (observer != null) {
+            observer.onKeyboardHeightChanged(height);
         }
     } 
 }

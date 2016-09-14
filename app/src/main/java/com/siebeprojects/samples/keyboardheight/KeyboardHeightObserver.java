@@ -24,11 +24,10 @@ package com.siebeprojects.samples.keyboardheight;
 public interface KeyboardHeightObserver {
 
     /** 
-     * Called when the keyboard height has changed, if fullScreen is true when
-     * height must be 0.
+     * Called when the keyboard height has changed, 0 means keyboard is closed,
+     * >= 1 means keyboard is opened.
      * 
-     * @param fullScreen    indicates that the screen is in fullscreen mode 
      * @param height        The height of the keyboard
      */
-    void onKeyboardHeightChanged(boolean fullScreen, int height);
+    void onKeyboardHeightChanged(int height);
 }

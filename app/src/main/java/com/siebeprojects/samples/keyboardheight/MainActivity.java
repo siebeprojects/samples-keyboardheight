@@ -31,13 +31,18 @@ public final class MainActivity extends AppCompatActivity implements KeyboardHei
     /** Tag for logging */
     private final static String TAG = "sample_MainActivity";
 
+    /** The keyboard height provider */
+    private KeyboardHeightProvider keyboardHeightProvider;
+
     /**
      * {@inheritDoc}
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main_activity);
+        setContentView(R.layout.keyboardheight_activity);
+        
+        keyboardHeightProvider = new KeyboardHeightProvider(this, findViewById(R.id.parentview), 0, 0);
     }
 
     /**
@@ -54,6 +59,15 @@ public final class MainActivity extends AppCompatActivity implements KeyboardHei
     @Override
     public void onResume() {
         super.onResume();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onPostResume() {
+        super.onPostResume();
+        keyboardHeightProvider.start();
     }
 
     /**

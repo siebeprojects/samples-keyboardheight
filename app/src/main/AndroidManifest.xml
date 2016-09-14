@@ -22,7 +22,7 @@
         android:label="@string/app_name">
 
         <activity
-            android:name=".app.MainActivity"
+            android:name=".MainActivity"
             android:theme="@style/Theme.AppCompat.Light">
 
             <intent-filter>
