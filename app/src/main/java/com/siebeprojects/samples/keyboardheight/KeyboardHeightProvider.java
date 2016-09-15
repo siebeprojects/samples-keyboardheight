@@ -144,49 +144,23 @@ public class KeyboardHeightProvider extends PopupWindow {
         return activity.getResources().getConfiguration().orientation;
     }
 
-    /** 
-     * 
-     */
-    private int getNavigationBarHeight(Resources res) {
-        int resId = res.getIdentifier("navigation_bar_height", "dimen", "android");
-        return resId > 0 ? res.getDimensionPixelSize(resId) : 0;
-    }
-
-    /** 
-     * 
-     */
-    private int getStatusBarHeight(Resources res) {
-        int resId  = res.getIdentifier("status_bar_height", "dimen", "android");
-        return resId > 0 ? res.getDimensionPixelSize(resId) : 0; 
-    }
-
     /**
      *
      */
     private void handleOnGlobalLayout() {
 
+        Point screenSize = new Point();
+        activity.getWindowManager().getDefaultDisplay().getSize(screenSize);
+
         Rect rect = new Rect();
         popupView.getWindowVisibleDisplayFrame(rect);
 
-        Resources res = activity.getResources();
-        int screenHeight        = parentView.getRootView().getHeight();
-        int statusBarHeight     = getStatusBarHeight(res);
-        int navigationBarHeight = getNavigationBarHeight(res);
-        int orientation         = getScreenOrientation();
-        int keyboardHeight      = 0;
-
-        if (rect.bottom == screenHeight) {
-            this.navigationBarVisible = false;
+        int orientation    = getScreenOrientation();
+        int keyboardHeight = screenSize.y - rect.bottom;
+        
+        if (keyboardHeight == 0) {
             notifyKeyboardHeightChanged(0, orientation);
         }
-        else if (rect.bottom + navigationBarHeight == screenHeight) {
-            this.navigationBarVisible = true;
-            notifyKeyboardHeightChanged(0, orientation);
-        }
-        else if ((keyboardHeight = calculateKeyboardHeight(rect, statusBarHeight, navigationBarHeight, screenHeight)) < NAVIGATION_BAR_MIN_HEIGHT) {
-            this.navigationBarVisible = false;
-            notifyKeyboardHeightChanged(0, orientation);
-        } 
         else if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             this.keyboardPortraitHeight = keyboardHeight; 
             notifyKeyboardHeightChanged(keyboardPortraitHeight, orientation);
@@ -196,21 +170,6 @@ public class KeyboardHeightProvider extends PopupWindow {
             notifyKeyboardHeightChanged(keyboardLandscapeHeight, orientation);
         }
     }
-
-    /**
-     *
-     */
-    private int calculateKeyboardHeight(Rect rect, int statusBarHeight, int navigationBarHeight, int screenHeight) {
-
-        int heightDifference = screenHeight - (rect.bottom - rect.top);
-        if (statusBarHeight > 0) {
-            heightDifference -= statusBarHeight;
-        }
-        if (navigationBarHeight > 0 && navigationBarVisible) {
-            heightDifference -= navigationBarHeight;
-        }
-        return heightDifference;
-    }        
 
     /**
      *
