@@ -46,11 +46,12 @@ public final class MainActivity extends AppCompatActivity implements KeyboardHei
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity);
 
-        View parentView = findViewById(R.id.parentview);
-        keyboardHeightProvider = new KeyboardHeightProvider(this, parentView);
-        
-        // start the keyboard height provider after 
-        // the view is initialized and after onResume of this Activity
+        keyboardHeightProvider = new KeyboardHeightProvider(this);
+
+        // make sure to start the keyboard height provider after the onResume
+        // of this activity. This is because a popup window must be initialised
+        // and attached to the activity root view. 
+        View parentView = findViewById(R.id.activitylayout);
         parentView.post(new Runnable() {
                 public void run() {
                     keyboardHeightProvider.start();

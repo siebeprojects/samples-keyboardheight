@@ -25,6 +25,7 @@ import android.util.Log;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
+import android.util.DisplayMetrics;
 
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -57,11 +58,11 @@ public class KeyboardHeightProvider extends PopupWindow {
     /** The cached portrait height of the keyboard */
     private int keyboardPortraitHeight;
 
-    /** The parent view that is used to measure the screen with and height */
-    private View parentView;
-
     /** The view that is used to calculate the keyboard height */
     private View popupView;
+
+    /** The parent view */
+    private View parentView;
 
     /** The root activity that uses this KeyboardHeightProvider */
     private Activity activity;
@@ -72,16 +73,10 @@ public class KeyboardHeightProvider extends PopupWindow {
     /** 
      * Construct a new KeyboardHeightProvider
      * 
-     * @param activity                      The parent activity
-     * @param parentView                    The parent view used to calculate the height
+     * @param activity The parent activity
      */
-    public KeyboardHeightProvider(Activity activity, View parentView) {
+    public KeyboardHeightProvider(Activity activity) {
 		super(activity);
-
-        if (parentView == null) {
-            throw new IllegalArgumentException("parentView cannot be null");
-        }
-        this.parentView = parentView;
         this.activity = activity;
 
         LayoutInflater inflator = (LayoutInflater) activity.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
@@ -90,6 +85,8 @@ public class KeyboardHeightProvider extends PopupWindow {
 
         setSoftInputMode(LayoutParams.SOFT_INPUT_ADJUST_RESIZE | LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
+
+        parentView = activity.findViewById(android.R.id.content);
 
         setWidth(0);
         setHeight(LayoutParams.MATCH_PARENT);
@@ -162,9 +159,7 @@ public class KeyboardHeightProvider extends PopupWindow {
      * @return the screen orientation
      */
     public int getScreenOrientation() {
-        Point size = new Point();
-        activity.getWindowManager().getDefaultDisplay().getSize(size);
-        return size.x < size.y ? Configuration.ORIENTATION_PORTRAIT : Configuration.ORIENTATION_LANDSCAPE;
+        return activity.getResources().getConfiguration().orientation;
     }
 
     /** 
@@ -190,18 +185,9 @@ public class KeyboardHeightProvider extends PopupWindow {
 
         Rect rect = new Rect();
         popupView.getWindowVisibleDisplayFrame(rect);
-        int screenHeight = parentView.getRootView().getHeight();
-        Log.i(TAG, "screenheight: " + screenHeight);
-        handleLayoutChanged(rect, screenHeight);
-    }
-
-    /**
-     *
-     */
-    private void handleLayoutChanged(Rect rect, int screenHeight) {
 
         Resources res = activity.getResources();
-        
+        int screenHeight        = parentView.getRootView().getHeight();
         int statusBarHeight     = getStatusBarHeight(res);
         int navigationBarHeight = getNavigationBarHeight(res);
         int orientation         = getScreenOrientation();
@@ -232,9 +218,9 @@ public class KeyboardHeightProvider extends PopupWindow {
     /**
      *
      */
-    private int calculateKeyboardHeight(Rect r, int statusBarHeight, int navigationBarHeight, int screenHeight) {
+    private int calculateKeyboardHeight(Rect rect, int statusBarHeight, int navigationBarHeight, int screenHeight) {
 
-        int heightDifference = screenHeight - (r.bottom - r.top);
+        int heightDifference = screenHeight - (rect.bottom - rect.top);
         if (statusBarHeight > 0) {
             heightDifference -= statusBarHeight;
         }
