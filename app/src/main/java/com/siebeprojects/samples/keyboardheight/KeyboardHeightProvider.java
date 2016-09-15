@@ -136,29 +136,11 @@ public class KeyboardHeightProvider extends PopupWindow {
     }
    
     /**
-     * Get the keyboard height when the phone is in landscape mode. 
-     *
-     * @return the landscape mode
-     */
-    public int getKeyboardLandscapeHeight() {
-        return keyboardLandscapeHeight;
-    }
-
-    /**
-     * Get the keyboard height when the phone is in portrait mode. 
-     *
-     * @return The portrait keyboard height
-     */
-    public int getKeyboardPortraitHeight() {
-        return keyboardPortraitHeight;
-    }
-
-    /**
      * Get the screen orientation
      *
      * @return the screen orientation
      */
-    public int getScreenOrientation() {
+    private int getScreenOrientation() {
         return activity.getResources().getConfiguration().orientation;
     }
 
