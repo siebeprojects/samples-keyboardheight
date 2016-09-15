@@ -51,8 +51,8 @@ public final class MainActivity extends AppCompatActivity implements KeyboardHei
         // make sure to start the keyboard height provider after the onResume
         // of this activity. This is because a popup window must be initialised
         // and attached to the activity root view. 
-        View parentView = findViewById(R.id.activitylayout);
-        parentView.post(new Runnable() {
+        View view = findViewById(R.id.activitylayout);
+        view.post(new Runnable() {
                 public void run() {
                     keyboardHeightProvider.start();
                 }
@@ -94,6 +94,7 @@ public final class MainActivity extends AppCompatActivity implements KeyboardHei
 
         String or = orientation == Configuration.ORIENTATION_PORTRAIT ? "portrait" : "landscape";
         Log.i(TAG, "onKeyboardHeightChanged in pixels: " + height + " " + or);
+
         TextView tv = (TextView)findViewById(R.id.height_text);
         tv.setText(Integer.toString(height) + " " + or);
     }
