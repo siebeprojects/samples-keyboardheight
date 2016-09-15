@@ -147,7 +147,7 @@ public class KeyboardHeightProvider extends PopupWindow {
     /**
      * Popup window itself is as big as the window of the Activity. 
      * The keyboard can then be calculated by extracting the popup view bottom 
-     * from the activity window height.
+     * from the activity window height. 
      */
     private void handleOnGlobalLayout() {
 
