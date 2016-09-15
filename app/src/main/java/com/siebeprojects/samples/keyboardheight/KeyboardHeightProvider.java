@@ -21,7 +21,7 @@ import android.app.Activity;
 
 import android.content.res.Configuration;
 import android.content.res.Resources;
-
+import android.util.Log;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
@@ -191,7 +191,7 @@ public class KeyboardHeightProvider extends PopupWindow {
         Rect rect = new Rect();
         popupView.getWindowVisibleDisplayFrame(rect);
         int screenHeight = parentView.getRootView().getHeight();
-
+        Log.i(TAG, "screenheight: " + screenHeight);
         handleLayoutChanged(rect, screenHeight);
     }
 

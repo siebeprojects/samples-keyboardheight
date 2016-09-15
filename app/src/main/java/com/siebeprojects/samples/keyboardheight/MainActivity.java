@@ -47,7 +47,7 @@ public final class MainActivity extends AppCompatActivity implements KeyboardHei
         setContentView(R.layout.activity);
 
         View parentView = findViewById(R.id.parentview);
-        keyboardHeightProvider = new KeyboardHeightProvider(this, parentView, 0, 0);
+        keyboardHeightProvider = new KeyboardHeightProvider(this, parentView);
         
         // start the keyboard height provider after 
         // the view is initialized and after onResume of this Activity
@@ -57,7 +57,6 @@ public final class MainActivity extends AppCompatActivity implements KeyboardHei
                 }
             });
     }
-
 
     /**
      * {@inheritDoc}
