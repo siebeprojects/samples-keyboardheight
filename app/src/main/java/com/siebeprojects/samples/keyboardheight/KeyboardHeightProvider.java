@@ -19,7 +19,6 @@ package com.siebeprojects.samples.keyboardheight;
 
 import android.app.Activity;
 
-import android.util.Log;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 
@@ -27,7 +26,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 
-import android.view.Display;
+//remove//import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,19 +36,21 @@ import android.view.WindowManager.LayoutParams;
 
 import android.widget.PopupWindow;
 
+
 /**
  * The keyboard height provider, this class uses a PopupWindow
  * to calculate the window height when the floating keyboard is opened and closed. 
  */
 public class KeyboardHeightProvider extends PopupWindow {
 
+    /** The tag for logging purposes */
     private final static String TAG = "sample_KeyboardHeightProvider";
-
-    /** The keyboard height observer */
-    private KeyboardHeightObserver observer;
 
     /** The minimum height of the navigation bar */
     private final static int NAVIGATION_BAR_MIN_HEIGHT  = 100;
+
+    /** The keyboard height observer */
+    private KeyboardHeightObserver observer;
 
     /** The cached landscape height of the keyboard */
     private int keyboardLandscapeHeight;
@@ -66,7 +67,7 @@ public class KeyboardHeightProvider extends PopupWindow {
     /** The root activity that uses this KeyboardHeightProvider */
     private Activity activity;
 
-    /** Indicates of the navigation is visible or not  */
+    /** Indicates of the navigation is visible or not */
     private boolean navigationBarVisible;
 
     /** 
@@ -150,15 +151,6 @@ public class KeyboardHeightProvider extends PopupWindow {
     }
    
     /**
-     * Get the keyboard height when the phone is in portrait mode. 
-     *
-     * @return The portrait keyboard height
-     */
-    public int getKeyboardPortraitHeight() {
-        return keyboardPortraitHeight;
-    }
-
-    /**
      * Get the keyboard height when the phone is in landscape mode. 
      *
      * @return the landscape mode
@@ -168,49 +160,39 @@ public class KeyboardHeightProvider extends PopupWindow {
     }
 
     /**
+     * Get the keyboard height when the phone is in portrait mode. 
+     *
+     * @return The portrait keyboard height
+     */
+    public int getKeyboardPortraitHeight() {
+        return keyboardPortraitHeight;
+    }
+
+    /**
      * Get the screen orientation
      *
      * @return the screen orientation
      */
     public int getScreenOrientation() {
-
         Point size = new Point();
         activity.getWindowManager().getDefaultDisplay().getSize(size);
-        int orientation = Configuration.ORIENTATION_UNDEFINED;
-
-        if (size.x > size.y) {
-            orientation = Configuration.ORIENTATION_LANDSCAPE;
-        } else { 
-            orientation = Configuration.ORIENTATION_PORTRAIT;
-        }
-        return orientation;
-    }
-
-
-    /** 
-     * 
-     */
-    private int getStatusBarHeight(Resources res) {
-
-        int resId  = res.getIdentifier("status_bar_height", "dimen", "android");
-        int height = 0;
-        if (resId > 0) {
-            height = res.getDimensionPixelSize(resId);
-        }
-        return height;
+        return size.x > size.y ? Configuration.ORIENTATION_LANDSCAPE : Configuration.ORIENTATION_PORTRAIT;
     }
 
     /** 
      * 
      */
     private int getNavigationBarHeight(Resources res) {
+        int resId = res.getIdentifier("navigation_bar_height", "dimen", "android");
+        return resId > 0 ? res.getDimensionPixelSize(resId) : 0;
+    }
 
-        int resId  = res.getIdentifier("navigation_bar_height", "dimen", "android");
-        int height = 0;
-        if (resId > 0) {
-            height = res.getDimensionPixelSize(resId);
-        }
-        return height;
+    /** 
+     * 
+     */
+    private int getStatusBarHeight(Resources res) {
+        int resId  = res.getIdentifier("status_bar_height", "dimen", "android");
+        return resId > 0 ? res.getDimensionPixelSize(resId) : 0; 
     }
 
     /**
@@ -221,7 +203,7 @@ public class KeyboardHeightProvider extends PopupWindow {
         Rect rect = new Rect();
         popupView.getWindowVisibleDisplayFrame(rect);
 
-        int screenWidth  = parentView.getRootView().getWidth();
+        int screenWidth = parentView.getRootView().getWidth();
         int screenHeight = parentView.getRootView().getHeight();
 
         handleLayoutChanged(rect, screenHeight, screenWidth < screenHeight);
@@ -238,7 +220,6 @@ public class KeyboardHeightProvider extends PopupWindow {
         int navigationBarHeight = getNavigationBarHeight(res);
         int keyboardHeight = 0;
 
-        // keyboard is not shown
         if (rect.bottom == screenHeight) {
             this.navigationBarVisible = false;
             notifyKeyboardHeightChanged(0);
