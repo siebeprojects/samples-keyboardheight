@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.content.res.Configuration;
 
 /**
  * MainActivity that initialises the keyboardheight 
@@ -89,9 +90,11 @@ public final class MainActivity extends AppCompatActivity implements KeyboardHei
      * {@inheritDoc}
      */
     @Override
-    public void onKeyboardHeightChanged(int height) {
-        Log.i(TAG, "onKeyboardHeightChanged in pixels: " + height);
+    public void onKeyboardHeightChanged(int height, int orientation) {
+
+        String or = orientation == Configuration.ORIENTATION_PORTRAIT ? "portrait" : "landscape";
+        Log.i(TAG, "onKeyboardHeightChanged in pixels: " + height + " " + or);
         TextView tv = (TextView)findViewById(R.id.height_text);
-        tv.setText(Integer.toString(height));
+        tv.setText(Integer.toString(height) + " " + or);
     }
 }

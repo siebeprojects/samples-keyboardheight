@@ -28,6 +28,8 @@ public interface KeyboardHeightObserver {
      * >= 1 means keyboard is opened.
      * 
      * @param height        The height of the keyboard in pixels
+     * @param orientation   The orientation either: Configuration.ORIENTATION_PORTRAIT or 
+     *                      Configuration.ORIENTATION_LANDSCAPE
      */
-    void onKeyboardHeightChanged(int height);
+    void onKeyboardHeightChanged(int height, int orientation);
 }

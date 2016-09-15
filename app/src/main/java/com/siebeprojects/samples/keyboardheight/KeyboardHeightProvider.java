@@ -26,7 +26,6 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 
-//remove//import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -75,26 +74,15 @@ public class KeyboardHeightProvider extends PopupWindow {
      * 
      * @param activity                      The parent activity
      * @param parentView                    The parent view used to calculate the height
-     * @param keyboardPortraitHeight        An optional cached value of the keyboard height in portrait mode
-     * @param storedLandscapeHeight         an optional cached value of the keyboard height in landscape mode
      */
-    public KeyboardHeightProvider(Activity activity, View parentView, int keyboardPortraitheight, int keyboardLandscapeHeight) {
+    public KeyboardHeightProvider(Activity activity, View parentView) {
 		super(activity);
 
         if (parentView == null) {
             throw new IllegalArgumentException("parentView cannot be null");
         }
-        if (keyboardPortraitHeight < 0) {
-            throw new IllegalArgumentException("storedPortraitHeight must be >= 0");
-        }
-        if (keyboardLandscapeHeight < 0) {
-            throw new IllegalArgumentException("storedLandscapeHeight must be >= 0");
-        }
-
         this.parentView = parentView;
         this.activity = activity;
-        this.keyboardPortraitHeight = keyboardPortraitHeight;
-        this.keyboardLandscapeHeight = keyboardLandscapeHeight;
 
         LayoutInflater inflator = (LayoutInflater) activity.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
         this.popupView = inflator.inflate(R.layout.popupwindow, null, false);
@@ -176,7 +164,7 @@ public class KeyboardHeightProvider extends PopupWindow {
     public int getScreenOrientation() {
         Point size = new Point();
         activity.getWindowManager().getDefaultDisplay().getSize(size);
-        return size.x > size.y ? Configuration.ORIENTATION_LANDSCAPE : Configuration.ORIENTATION_PORTRAIT;
+        return size.x < size.y ? Configuration.ORIENTATION_PORTRAIT : Configuration.ORIENTATION_LANDSCAPE;
     }
 
     /** 
@@ -202,43 +190,42 @@ public class KeyboardHeightProvider extends PopupWindow {
 
         Rect rect = new Rect();
         popupView.getWindowVisibleDisplayFrame(rect);
-
-        int screenWidth = parentView.getRootView().getWidth();
         int screenHeight = parentView.getRootView().getHeight();
 
-        handleLayoutChanged(rect, screenHeight, screenWidth < screenHeight);
+        handleLayoutChanged(rect, screenHeight);
     }
 
     /**
      *
      */
-    private void handleLayoutChanged(Rect rect, int screenHeight, boolean portrait) {
+    private void handleLayoutChanged(Rect rect, int screenHeight) {
 
         Resources res = activity.getResources();
         
-        int statusBarHeight = getStatusBarHeight(res);
+        int statusBarHeight     = getStatusBarHeight(res);
         int navigationBarHeight = getNavigationBarHeight(res);
-        int keyboardHeight = 0;
+        int orientation         = getScreenOrientation();
+        int keyboardHeight      = 0;
 
         if (rect.bottom == screenHeight) {
             this.navigationBarVisible = false;
-            notifyKeyboardHeightChanged(0);
+            notifyKeyboardHeightChanged(0, orientation);
         }
         else if (rect.bottom + navigationBarHeight == screenHeight) {
             this.navigationBarVisible = true;
-            notifyKeyboardHeightChanged(0);
+            notifyKeyboardHeightChanged(0, orientation);
         }
         else if ((keyboardHeight = calculateKeyboardHeight(rect, statusBarHeight, navigationBarHeight, screenHeight)) < NAVIGATION_BAR_MIN_HEIGHT) {
             this.navigationBarVisible = false;
-            notifyKeyboardHeightChanged(0);
+            notifyKeyboardHeightChanged(0, orientation);
         } 
-        else if (portrait) {
+        else if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             this.keyboardPortraitHeight = keyboardHeight; 
-            notifyKeyboardHeightChanged(keyboardPortraitHeight);
+            notifyKeyboardHeightChanged(keyboardPortraitHeight, orientation);
         } 
         else {
             this.keyboardLandscapeHeight = keyboardHeight; 
-            notifyKeyboardHeightChanged(keyboardLandscapeHeight);
+            notifyKeyboardHeightChanged(keyboardLandscapeHeight, orientation);
         }
     }
 
@@ -260,9 +247,9 @@ public class KeyboardHeightProvider extends PopupWindow {
     /**
      *
      */
-    private void notifyKeyboardHeightChanged(int height) {
+    private void notifyKeyboardHeightChanged(int height, int orientation) {
         if (observer != null) {
-            observer.onKeyboardHeightChanged(height);
+            observer.onKeyboardHeightChanged(height, orientation);
         }
     }
 }
