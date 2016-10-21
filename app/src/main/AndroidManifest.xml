@@ -19,11 +19,12 @@
 
     <!-- Define the application -->
     <application
+        android:icon="@drawable/icon"
         android:label="@string/app_name">
 
         <activity
             android:name=".MainActivity"
-            android:windowSoftInputMode="stateAlwaysVisible|adjustNothing"
+            android:windowSoftInputMode="stateAlwaysVisible|adjustPan"
             android:theme="@style/Theme.AppCompat.Light">
 
             <intent-filter>
