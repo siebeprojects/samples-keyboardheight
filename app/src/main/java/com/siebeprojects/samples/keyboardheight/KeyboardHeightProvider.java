@@ -130,15 +130,6 @@ public class KeyboardHeightProvider extends PopupWindow {
     }
    
     /**
-     * Get the screen orientation
-     *
-     * @return the screen orientation
-     */
-    private int getScreenOrientation() {
-        return activity.getResources().getConfiguration().orientation;
-    }
-
-    /**
      * Popup window itself is as big as the window of the Activity. 
      * The keyboard can then be calculated by extracting the popup view bottom 
      * from the activity window height. 
@@ -170,9 +161,10 @@ public class KeyboardHeightProvider extends PopupWindow {
         }
     }
 
-    /**
-     *
-     */
+    private int getScreenOrientation() {
+        return activity.getResources().getConfiguration().orientation;
+    }
+    
     private void notifyKeyboardHeightChanged(int height, int orientation) {
         if (observer != null) {
             observer.onKeyboardHeightChanged(height, orientation);
