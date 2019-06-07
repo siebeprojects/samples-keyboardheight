@@ -99,6 +99,7 @@ public final class MainActivity extends AppCompatActivity implements KeyboardHei
             View view = findViewById(R.id.keyboard);
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)view .getLayoutParams();
             params.height = height;
+            view.setLayoutParams(params);
         }
     }
 }
