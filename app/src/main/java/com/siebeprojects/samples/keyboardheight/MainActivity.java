@@ -28,15 +28,11 @@ import android.content.res.Configuration;
 import android.widget.RelativeLayout;
 
 /**
- * MainActivity that initialises the keyboardheight 
- * provider and observer. 
+ * MainActivity that initializes the keyboardheight provider and observer. 
  */
 public final class MainActivity extends AppCompatActivity implements KeyboardHeightObserver {
 
-    /** Tag for logging */
     private final static String TAG = "sample_MainActivity";
-
-    /** The keyboard height provider */
     private KeyboardHeightProvider keyboardHeightProvider;
 
     /**
@@ -92,16 +88,17 @@ public final class MainActivity extends AppCompatActivity implements KeyboardHei
      */
     @Override
     public void onKeyboardHeightChanged(int height, int orientation) {
-
-        String or = orientation == Configuration.ORIENTATION_PORTRAIT ? "portrait" : "landscape";
-        Log.i(TAG, "onKeyboardHeightChanged in pixels: " + height + " " + or);
+        String orientationLabel = orientation == Configuration.ORIENTATION_PORTRAIT ? "portrait" : "landscape";
+        Log.i(TAG, "onKeyboardHeightChanged in pixels: " + height + " " + orientationLabel);
 
         TextView tv = (TextView)findViewById(R.id.height_text);
-        tv.setText(Integer.toString(height) + " " + or);
+        tv.setText(Integer.toString(height) + " " + orientationLabel);
 
-        // color the keyboard height view, this will stay when you close the keyboard
-        View view = findViewById(R.id.keyboard);
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)view .getLayoutParams();
-        params.height = height;
+        // color the keyboard height view, this will remain visible when you close the keyboard
+        if (height > 0) {
+            View view = findViewById(R.id.keyboard);
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)view .getLayoutParams();
+            params.height = height;
+        }
     }
 }

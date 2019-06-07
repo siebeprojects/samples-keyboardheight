@@ -2,14 +2,14 @@ apply plugin: 'com.android.application'
 
 android {
 
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
 
     defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 23
-        versionName = "1.0.0"
-        versionCode = 1000
+        minSdkVersion 19
+        targetSdkVersion 28
+        versionName = "1.0.1"
+        versionCode = 1001
         applicationId = "com.siebeprojects.samples.keyboardheight"
     }
 
@@ -26,5 +26,5 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:23.3.0'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
 }
