@@ -22,13 +22,13 @@ import android.view.View;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.content.res.Configuration;
 import android.widget.RelativeLayout;
 
 /**
- * MainActivity that initializes the keyboardheight provider and observer. 
+ * MainActivity that initializes the keyboardheight provider and observer.
  */
 public final class MainActivity extends AppCompatActivity implements KeyboardHeightObserver {
 
@@ -47,7 +47,7 @@ public final class MainActivity extends AppCompatActivity implements KeyboardHei
 
         // make sure to start the keyboard height provider after the onResume
         // of this activity. This is because a popup window must be initialised
-        // and attached to the activity root view. 
+        // and attached to the activity root view.
         View view = findViewById(R.id.activitylayout);
         view.post(new Runnable() {
                 public void run() {
