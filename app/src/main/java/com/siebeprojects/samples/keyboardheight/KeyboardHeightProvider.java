@@ -39,7 +39,7 @@ import android.widget.PopupWindow;
 
 /**
  * The keyboard height provider, this class uses a PopupWindow
- * to calculate the window height when the floating keyboard is opened and closed. 
+ * to calculate the window height when the floating keyboard is opened and closed.
  */
 public class KeyboardHeightProvider extends PopupWindow {
 
@@ -64,9 +64,9 @@ public class KeyboardHeightProvider extends PopupWindow {
     /** The root activity that uses this KeyboardHeightProvider */
     private Activity activity;
 
-    /** 
+    /**
      * Construct a new KeyboardHeightProvider
-     * 
+     *
      * @param activity The parent activity
      */
     public KeyboardHeightProvider(Activity activity) {
@@ -110,7 +110,7 @@ public class KeyboardHeightProvider extends PopupWindow {
     }
 
     /**
-     * Close the keyboard height provider, 
+     * Close the keyboard height provider,
      * this provider will not be used anymore.
      */
     public void close() {
@@ -118,21 +118,21 @@ public class KeyboardHeightProvider extends PopupWindow {
         dismiss();
     }
 
-    /** 
-     * Set the keyboard height observer to this provider. The 
-     * observer will be notified when the keyboard height has changed. 
+    /**
+     * Set the keyboard height observer to this provider. The
+     * observer will be notified when the keyboard height has changed.
      * For example when the keyboard is opened or closed.
-     * 
+     *
      * @param observer The observer to be added to this provider.
      */
     public void setKeyboardHeightObserver(KeyboardHeightObserver observer) {
         this.observer = observer;
     }
-   
+
     /**
-     * Popup window itself is as big as the window of the Activity. 
-     * The keyboard can then be calculated by extracting the popup view bottom 
-     * from the activity window height. 
+     * Popup window itself is as big as the window of the Activity.
+     * The keyboard can then be calculated by extracting the popup view bottom
+     * from the activity window height.
      */
     private void handleOnGlobalLayout() {
 
@@ -147,16 +147,16 @@ public class KeyboardHeightProvider extends PopupWindow {
         // the keyboard height. But this worked fine on a Nexus.
         int orientation = getScreenOrientation();
         int keyboardHeight = screenSize.y - rect.bottom;
-        
+
         if (keyboardHeight == 0) {
             notifyKeyboardHeightChanged(0, orientation);
         }
         else if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            this.keyboardPortraitHeight = keyboardHeight; 
+            this.keyboardPortraitHeight = keyboardHeight;
             notifyKeyboardHeightChanged(keyboardPortraitHeight, orientation);
-        } 
+        }
         else {
-            this.keyboardLandscapeHeight = keyboardHeight; 
+            this.keyboardLandscapeHeight = keyboardHeight;
             notifyKeyboardHeightChanged(keyboardLandscapeHeight, orientation);
         }
     }
@@ -164,7 +164,7 @@ public class KeyboardHeightProvider extends PopupWindow {
     private int getScreenOrientation() {
         return activity.getResources().getConfiguration().orientation;
     }
-    
+
     private void notifyKeyboardHeightChanged(int height, int orientation) {
         if (observer != null) {
             observer.onKeyboardHeightChanged(height, orientation);

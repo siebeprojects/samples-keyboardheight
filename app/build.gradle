@@ -1,30 +1,28 @@
-apply plugin: 'com.android.application'
+plugins {
+    id 'com.android.application'
+}
 
 android {
-
-    compileSdkVersion 28
-    buildToolsVersion "28.0.3"
+    compileSdk 36
+    namespace "com.siebeprojects.samples.keyboardheight"
 
     defaultConfig {
-        minSdkVersion 19
-        targetSdkVersion 28
-        versionName = "1.0.1"
-        versionCode = 1001
-        applicationId = "com.siebeprojects.samples.keyboardheight"
+        minSdk 21
+        targetSdk 36
+        versionName "1.1.0"
+        versionCode 1100
+        applicationId "com.siebeprojects.samples.keyboardheight"
     }
 
-    lintOptions {
-      abortOnError false
-    }
-
-    signingConfigs {
-        release
-    }
-
-    buildTypes {
+    lint {
+        abortOnError false
     }
 }
 
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+}
+
 dependencies {
-    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'androidx.appcompat:appcompat:1.7.1'
 }
